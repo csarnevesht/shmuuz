@@ -36,46 +36,19 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     abstract: true,
     templateUrl: "templates/tabs.html"
   })
-  .state('tabs.home', {
-      url: "/home",
-      views: {
-        'home-tab': {
-          templateUrl: "home.html",
-          controller: 'HomeTabCtrl'
-        }
-      }
-    })
-   .state('tabs.get-togethers', {
-       url: '/get-togethers',
-       views: {
-         'get-togethers-tab': {
-           templateUrl: 'templates/tab-get-togethers.html',
-           controller: 'GetTogethersCtrl'
-         }
-       }
-     })
-     .state('tabs.get-together-detail', {
-       url: '/get-together/:getTogetherId',
-       views: {
-         'get-togethers-tab': {
-           templateUrl: 'templates/get-together-detail.html',
-           controller: 'GetTogetherDetailCtrl'
-         }
-       }
-     })
     .state('tabs.about', {
       url: "/about",
       views: {
         'about-tab': {
-          templateUrl: "about.html"
+          templateUrl: "templates/tab-about.html"
         }
       }
     })
-    .state('tabs.contact', {
-      url: "/contact",
+    .state('tabs.dash', {
+      url: "/dash",
       views: {
-        'contact-tab': {
-          templateUrl: "contact.html"
+        'dash-tab': {
+          templateUrl: "templates/tab-dash.html"
         }
       }
     })
@@ -114,7 +87,33 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
            controller: 'FriendDetailCtrl'
          }
        }
-    });
+    })
+    .state('tabs.get-togethers', {
+        url: '/get-togethers',
+        views: {
+          'get-togethers-tab': {
+            templateUrl: 'templates/tab-get-togethers.html',
+            controller: 'GetTogethersCtrl'
+          }
+        }
+      })
+      .state('tabs.get-together-detail', {
+        url: '/get-together/:getTogetherId',
+        views: {
+          'get-togethers-tab': {
+            templateUrl: 'templates/get-together-detail.html',
+            controller: 'GetTogetherDetailCtrl'
+          }
+        }
+      })
+      .state('tabs.account', {
+        url: "/account",
+        views: {
+          'account-tab': {
+            templateUrl: "templates/tab-account.html"
+          }
+        }
+      });
 
-    $urlRouterProvider.otherwise("/tab/get-togethers");
+    $urlRouterProvider.otherwise("/tab/about");
 })
