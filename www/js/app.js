@@ -36,16 +36,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     abstract: true,
     templateUrl: "templates/tabs.html"
   })
-  .state('search', {
-      url: '/search',
-      templateUrl: 'search.html'
-    })
-    .state('settings', {
-      url: '/settings',
-      templateUrl: 'settings.html'
-    })
-
-    .state('tabs.home', {
+  .state('tabs.home', {
       url: "/home",
       views: {
         'home-tab': {
@@ -72,32 +63,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
          }
        }
      })
-    .state('tabs.get-togethers-list', {
-      url: "/get-togethers-list",
-      views: {
-        'home-tab': {
-          templateUrl: "templates/get-togethers-list.html",
-          controller: 'GetTogethersCtrl'
-        }
-      }
-    })
-    // .state('tabs.get-togethers-list', {
-    //   url: "/get-togethers-list",
-    //   templateUrl: "templates/tab-get-togethers.html",
-    // })
     .state('tabs.about', {
       url: "/about",
       views: {
         'about-tab': {
           templateUrl: "about.html"
-        }
-      }
-    })
-    .state('tabs.navstack', {
-      url: "/navstack",
-      views: {
-        'about-tab': {
-          templateUrl: "nav-stack.html"
         }
       }
     })
@@ -148,14 +118,3 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
     $urlRouterProvider.otherwise("/tab/get-togethers");
 })
-
-.controller('NavCtrl', function($scope, $ionicSideMenuDelegate) {
-  $scope.showMenu = function () {
-    $ionicSideMenuDelegate.toggleLeft();
-  };
-  $scope.showRightMenu = function () {
-    $ionicSideMenuDelegate.toggleRight();
-  };
-})
-.controller('HomeTabCtrl', function($scope) {
-});
