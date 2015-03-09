@@ -17,7 +17,4 @@ ionic build ios
 ionic run ios  (or use xcode)
 
 ionic upload
-(caro.pertierra@gmail.com, mierda123)
-
-
-
+(caro.pertierra@gmail.com)
