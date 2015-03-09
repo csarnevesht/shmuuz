@@ -1,0 +1,175 @@
+<ion-view title="Get-togethers">
+
+    <ion-content>
+
+        <br>
+        <ion-toggle ng-model="data.showMap" ng-checked="data.showMap">Hide/Show Map</ion-toggle>
+         <div class="check-element animate-hide" ng-hide="!data.showMap">
+
+            <br>
+            <div class="list">
+              <div class="item item-input-inset">
+                <label class="item-input-wrapper">
+                  <i class="icon ion-search placeholder-icon"></i>
+                  <input autocomplete="on"
+                         type="text"
+                         id="autocomplete"
+                         disable-tap
+                         ng-autocomplete
+                         placeholder="Search"
+                         ng-model="search.text"
+                         googleplace
+                         geocode="data.geocode()">
+
+                </label>
+                <button class="btn" type="button" ng-click="geoCode()" ng-disabled="search.text.length == 0" title="search">
+                  &nbsp;<i class="ion-search"></i>
+                </button>
+                <button class="btn" type="button" ng-click="gotoCurrentLocation()" title="current location">
+                  &nbsp;<i class="ion-home"></i>
+                </button>
+              </div>
+            </div>
+
+            <div data-tap-disabled="true">
+              <map center="current-location" zoom="9">
+                <!-- <div full-screen-toggle class="custom-control">Full Screen</div> -->
+                <!-- <div get-together-info class="custom-control">Get-together Info</div> -->
+              </map>
+            </div>
+            <!-- current location -->
+            <div class="text-info text-right">
+                  {{loc.lat | lat:0}}, {{loc.lon | lon:0}}
+            </div>
+
+        </div>
+
+
+
+
+          <!-- list of get-togethers -->
+        <!-- <div class="container-fluid">
+            <div class="span3 btn"
+                ng-repeat="g in getTogethers"
+                ng-click="gotoLocation(g.latitude, g.longitude)">
+                <b>{{g.name}}</b>: {{g.address}}
+            </div>
+        </div> -->
+
+        <!-- <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="g in getTogethers" type="item-text-wrap" href="#/tab/get-together/{{g.id}}">
+          <img ng-src="{{getTogether.img}}">
+          <h2>{{g.name}}</h2>
+          <p>{{g.address}}</p>
+          <i class="icon ion-chevron-right icon-accessory"></i>
+        </ion-item>
+      </ion-list> -->
+
+        <div class="list">
+          <div class="item item-input-inset">
+            <button class="button button-icon icon ion-ios7-minus-outline"
+              ng-click="data.showDelete = !data.showDelete; data.showReorder = false">
+            </button>
+            <button class="button"
+                ng-click="data.showDelete = false; data.showReorder = !data.showReorder">
+                  Reorder
+            </button>
+          </div>
+        </div>
+
+        <ion-list show-delete="data.showDelete" show-reorder="data.showReorder">
+          <ion-item click-for-options ng-repeat="item in getTogethers"
+                    item="item">
+            <img ng-src="{{item.image}}" style="width: 64px; height: 64px">
+
+            <h2>{{item.name}}</h2>
+            <p>{{item.address}}</p>
+            <ion-delete-button class="ion-minus-circled"
+                               ng-click="deleteItem(item)">
+            </ion-delete-button>
+            <ion-option-button class="button-assertive"
+                               ng-click="mapIt(item)">
+              Map it
+            </ion-option-button>
+            <ion-option-button class="button-calm"
+                               ng-click="details(item,$index)">
+              Details
+            </ion-option-button>
+            <ion-reorder-button class="ion-navicon" on-reorder="moveMe(item, $fromIndex, $toIndex)"></ion-reorder-button>
+          </ion-item>
+
+        </ion-list>
+
+<!--
+        <div class="item my-item"
+          collection-repeat="item in getTogethers"
+          collection-item-width="'100%'"
+          collection-item-height="getItemHeight(item, $index)"
+          ng-style="{height: getItemHeight(item, $index)}">
+          <img ng-src="{{item.img}}">
+          <h2>{{item.name}}</h2>
+          <p>{{item.address}}</p>
+        </div> -->
+
+
+        <!-- <ion-list>
+              <ion-item ng-repeat="g in getTogethers" href="#">
+                <img ng-src="{{getTogether.img}}">
+                <h2>{{g.name}}</h2>
+                <p>{{g.address}}</p>
+
+                <ion-option-button class="button-positive">Share</ion-option-button>
+                <ion-option-button class="button-assertive">Edit</ion-option-button>
+            </ion-item>
+        </ion-list> -->
+
+        <script id="get-together.html" type="text/ng-template">
+
+            <div class="modal">
+              <!-- Modal header bar -->
+              <ion-header-bar class="bar-secondary">
+
+                <h1 class="title">{{ (getTogether.id == -9) ? 'New get-Together' : 'Get-Together' }}</h1>
+                <button class="button button-clear button-positive" ng-click="closeMe()">Cancel</button>
+              </ion-header-bar>
+              <!-- Modal content area -->
+              <ion-content>
+
+
+                <form ng-submit="handleGetTogether(getTogether)">
+                  <div class="list">
+                    <label class="item item-input">
+                      <span class="input-label">Name</span>
+                      <input type="text" ng-model="getTogether.name">
+                    </label>
+                    <label class="item item-input">
+                      <span class="input-label">Date</span>
+                      <input type="date" ng-model="getTogether.date" value="{{getTogether.date}}">
+                      <!-- &nbsp;{{getTogether.date | date: 'fullDate'}} -->
+                    </label>
+                    <label class="item item-input">
+                      <span class="input-label">Time</span>
+                      <input type="time" ng-model="getTogether.time" value="{{getTogether.time}}">
+                      <!-- &nbsp;{{getTogether.time | date: 'shortDate'}} -->
+
+                    </label>
+                    <label class="item item-input">
+                        <span class="input-label">Address</span>
+                        <input type="text" ng-model="getTogether.address">
+                    </label>
+                  </div>
+                  <div class="item item-input-inset">
+                      <button type="submit" class="button button-block button-positive">{{ (getTogether.id == -9) ? 'Create get-Together' : 'Edit/View details of get-Together' }}</button>
+                  </div>
+
+                  <div class="padding">
+                  </div>
+                </form>
+              </ion-content>
+            </div>
+
+        </script>
+
+
+
+
+</ion-view>

@@ -1,0 +1,67 @@
+<!--
+This template loads for the 'tab.get-together-detail' state (app.js)
+'getTogether' is a $scope variable created in the GetTogethersCtrl controller (controllers.js)
+The GetTogethersCtrl pulls data from the GetTogethers service (service.js)
+The GetTogethers service returns an array of getTogethers data
+-->
+<ion-view view-title="{{getTogether.name}}">
+    <div id="search-bar">
+      <div class="item item-input-inset">
+        <label class="item-input-wrapper" id="search-input">
+          <i class="icon ion-search placeholder-icon"></i>
+          <input type="text" placeholder="Search" ng-model="data.query" ng-change="search()">
+        </label>
+      </div>
+    </div>
+
+    <ion-content class="padding"  id="content" push-search>
+
+      <div id="photos" class="clearfix">
+        <div class="photo" ng-repeat="photo in photos.items" ng-click="selectImage(photo)">
+          <img ng-src="{{ photo.media.m }}">
+        </div>
+      </div>
+
+      <img ng-src="{{getTogether.image}}" style="width: 128px; height: 128px">
+      <h3>{{getTogether.name}}</h3>
+      <p>
+        {{getTogether.address}}
+      </p>
+      <p>
+        {{getTogether.notes}}
+      </p>
+
+
+
+      <form ng-submit="saveMe(getTogether)">
+        <div class="list">
+          <label class="item item-input">
+            <span class="input-label">Name</span>
+            <input type="text" ng-model="getTogether.name">
+          </label>
+          <label class="item item-input">
+            <span class="input-label">Date</span>
+            <input type="date" ng-model="getTogether.date" value="{{getTogether.date}}">
+            <!-- &nbsp;{{getTogether.date | date: 'fullDate'}} -->
+          </label>
+          <label class="item item-input">
+            <span class="input-label">Time</span>
+            <input type="time" ng-model="getTogether.time" value="{{getTogether.time}}">
+            <!-- &nbsp;{{getTogether.time | date: 'shortDate'}} -->
+
+          </label>
+          <label class="item item-input">
+              <span class="input-label">Address</span>
+              <input type="text" ng-model="getTogether.address">
+          </label>
+        </div>
+        <div class="item item-input-inset">
+            <button type="submit" class="button button-block button-positive">Save</button>
+        </div>
+
+        <div class="padding">
+        </div>
+      </form>
+
+  </ion-content>
+</ion-view>

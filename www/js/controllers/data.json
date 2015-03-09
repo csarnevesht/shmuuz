@@ -1,0 +1,43 @@
+{
+  "region": "Los Gatos",
+  "user": {
+      "defaults": {
+        "center": [37.235658659362755,-121.91386699676514]
+      }
+  },
+  "getTogethers": [
+    {
+      "id": 0,
+      "name": "Coffee at Starbucks",
+      "image" : "http://farm7.staticflickr.com/6057/6272348490_8c8c2aa6e9_m.jpg",
+      "address": "1709 Lobelia Lane, San Jose, CA 95124, USA",
+      "notes": "have good coffee and chat",
+      "latitude": 37.235658659362755,
+      "longitude" : -121.91386699676514,
+      "__time" : 61200000,
+      "__date" : 1426402800000
+    },
+    {
+      "id": 1,
+      "name": "Potluck lunch",
+      "image" : "http://farm6.staticflickr.com/5147/5662662762_2c05c04442_m.jpg",
+      "address": "20 Ryan Court, Stanford, CA 94305, USA",
+      "notes": "",
+      "latitude": 37.41230053854938,
+      "longitude" : -122.156982421875,
+      "__time" : 61200000,
+      "__date" : 1426402800000
+    },
+    {
+      "id" : 2,
+      "name" : "biking excursion",
+      "image" : "http://farm9.staticflickr.com/8542/15804986755_9981ecb278_m.jpg",
+      "address" : "210 Sequoia Avenue, Redwood City, CA 94061, USA",
+      "notes" : "",
+      "latitude" : 37.366132550555605,
+      "longitude" : -122.26409912109375,
+      "__time" : 61200000,
+      "__date" : 1426402800000
+    }
+  ]
+}

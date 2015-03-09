@@ -1,0 +1,20 @@
+<ion-view view-title="All get-togethers">
+  <ion-content class="padding">
+    <div ng-controller="GetTogethersCtrl">
+        <a class="button icon ion-home" href="#/tab/home"> Home</a>
+        <a class="button icon ion-chevron-left" href="#/tab/get-togethers"> Get togethers</a>
+        <br><br>
+        <ion-list>
+          <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="g in getTogethers" type="item-text-wrap" href="#/tab/get-together/{{g.id}}">
+            <img ng-src="{{getTogether.img}}">
+            <h2>{{g.name}}</h2>
+            <p>{{g.address}}</p>
+
+            <i class="icon ion-chevron-right icon-accessory"></i>
+
+          </ion-item>
+        </ion-list>
+
+    </div>
+  </ion-content>
+</ion-view>
