@@ -26,14 +26,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 })
 
 .config(function($stateProvider, $urlRouterProvider, $logProvider) {
-  $logProvider.debugEnabled(true);
-
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
   $stateProvider
-
+  .state('tabs', {
+    url: "/tab",
+    abstract: true,
+    templateUrl: "templates/tabs.html"
+  })
   .state('search', {
       url: '/search',
       templateUrl: 'search.html'
@@ -42,11 +44,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       url: '/settings',
       templateUrl: 'settings.html'
     })
-    .state('tabs', {
-      url: "/tab",
-      abstract: true,
-      templateUrl: "templates/tabs.html"
-    })
+
     .state('tabs.home', {
       url: "/home",
       views: {
@@ -146,16 +144,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
            controller: 'FriendDetailCtrl'
          }
        }
-
-       // .state('tabs.dash', {
-       //    url: '/dash',
-       //    views: {
-       //      'dash-tab': {
-       //        templateUrl: 'templates/tab-dash.html',
-       //        controller: 'DashCtrl'
-       //      }
-       //    }
-       //
     });
 
     $urlRouterProvider.otherwise("/tab/get-togethers");
