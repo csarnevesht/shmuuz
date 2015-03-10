@@ -1,7 +1,9 @@
-app.controller('AccountCtrl', function($scope, auth, $state, store) {
-
+app.controller('AccountCtrl', function($scope, auth, $state, $location, store) {
+    console.log('AccountCtrl');
     console.log('store', store);
-    $scope.profile = store.get('profile');
+    // $scope.profile = store.get('profile');
+    console.log('auth', auth);
+    $scope.profile = auth.profile;
 
 
 
@@ -11,8 +13,10 @@ app.controller('AccountCtrl', function($scope, auth, $state, store) {
       store.remove('token');
       store.remove('profile');
       store.remove('refreshToken');
-      console.log('$state.go tabs.dash');
-      $state.go('tabs.dash');
-      // $state.go('login');
+      // console.log('$state.go tabs.dash');
+      // $state.go('tabs.dash');
+      $state.go('login');
+      // $location.path('/');
+      // $state.go('tabs.dash');
     }
 });

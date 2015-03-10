@@ -26,6 +26,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 })
 
 .config(function($stateProvider, $urlRouterProvider, authProvider, $httpProvider, jwtInterceptorProvider) {
+  console.log('config');
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
   // Set up the various states which the app can be in.
@@ -129,9 +130,9 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
       console.log('authProvider.init');
       authProvider.init({
-       domain: 'joeshmuuz.auth0.com',
-       clientID: 'ZaINHe6gCLQ8oqzbUYCKqt9WDJfS68df',
-       loginState: 'login'
+        domain: AUTH0_DOMAIN,
+        clientID: AUTH0_CLIENT_ID,
+        loginState: 'login'
      });
 
 
@@ -156,4 +157,14 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
      $httpProvider.interceptors.push('jwtInterceptor');
 
-})
+}).run(function($rootScope, auth, store) {
+  $rootScope.$on('$locationChangeStart', function() {
+    if (!auth.isAuthenticated) {
+      var token = store.get('token');
+      if (token) {
+        auth.authenticate(store.get('profile'), token);
+      }
+    }
+
+  });
+});
