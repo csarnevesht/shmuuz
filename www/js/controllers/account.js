@@ -1,6 +1,10 @@
+app.controller('AccountCtrl', function($scope, auth, $state, store) {
 
-app.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
+  $scope.logout = function() {
+    auth.signout();
+    store.remove('token');
+    store.remove('profile');
+    store.remove('refreshToken');
+    $state.go('login');
+  }
 });

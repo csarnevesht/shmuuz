@@ -1,4 +1,4 @@
-var app = angular.module('starter.controllers', ['ngMap', 'ui.bootstrap', 'ngResource']);
+var app = angular.module('starter.controllers', ['ngMap', 'ui.bootstrap', 'ngResource','auth0','angular-storage','angular-jwt']);
 
 var servicesModule = angular.module('starter.services', ["firebase"])
 .constant('FIREBASE_URL', 'https://blazing-torch-7077.firebaseio.com/');
@@ -11,7 +11,7 @@ var servicesModule = angular.module('starter.services', ["firebase"])
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
-.run(function($ionicPlatform) {
+.run(function(auth, $ionicPlatform) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -25,16 +25,25 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider, $logProvider) {
+.config(function($stateProvider, $urlRouterProvider, authProvider, $httpProvider, jwtInterceptorProvider) {
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
   $stateProvider
+  .state('login', {
+    url: '/login',
+    templateUrl: 'templates/login.html',
+    controller: 'LoginCtrl',
+  })
   .state('tabs', {
     url: "/tab",
     abstract: true,
-    templateUrl: "templates/tabs.html"
+    templateUrl: "templates/tabs.html",
+    // The tab requires user login
+    data: {
+      requiresLogin: true
+    }
   })
     .state('tabs.about', {
       url: "/about",
@@ -42,7 +51,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         'about-tab': {
           templateUrl: "templates/tab-about.html"
         }
-      }
+      },
+
     })
     .state('tabs.dash', {
       url: "/dash",
@@ -115,5 +125,34 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         }
       });
 
-    $urlRouterProvider.otherwise("/tab/about");
+      authProvider.init({
+       domain: 'joeshmuuz.auth0.com',
+       clientID: 'ZaINHe6gCLQ8oqzbUYCKqt9WDJfS68df',
+       loginState: 'login'
+     });
+
+
+     $urlRouterProvider.otherwise("/tab/about");
+
+     // if none of the above states are matched, use this as the fallback
+     $urlRouterProvider.otherwise('/tab/dash');
+
+     jwtInterceptorProvider.tokenGetter = function(store, jwtHelper, auth) {
+       var idToken = store.get('token');
+       var refreshToken = store.get('refreshToken');
+       if (!idToken || !refreshToken) {
+         return null;
+       }
+       if (jwtHelper.isTokenExpired(idToken)) {
+         return auth.refreshIdToken(refreshToken).then(function(idToken) {
+           store.set('token', idToken);
+           return idToken;
+         });
+       } else {
+         return idToken;
+       }
+     }
+
+     $httpProvider.interceptors.push('jwtInterceptor');
+
 })
