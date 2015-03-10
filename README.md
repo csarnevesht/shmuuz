@@ -21,6 +21,14 @@ IMPORTANT:
     The www/lib directory has been manually modified to put back angular 1.3.12 in the www/lib/ionic/js/angular directory
     and the www/lib/angular-* directores were removed.
 
+IMPORTANT:
+on ios, sometimes the app browser doesn't start, do the following:
+ionic platform rm ios
+ionic platform add ios
+ionic plugin rm org.apache.cordova.inappbrowser
+ionic plugin add org.apache.cordova.inappbrowser
+ionic plugin rm org.apache.cordova.geolocation
+ionic plugin add org.apache.cordova.geolocation
 
 
 **********************************************************************************************************

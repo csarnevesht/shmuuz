@@ -31,20 +31,29 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
   $stateProvider
-  .state('login', {
-    url: '/login',
-    templateUrl: 'templates/login.html',
-    controller: 'LoginCtrl',
-  })
-  .state('tabs', {
-    url: "/tab",
-    abstract: true,
-    templateUrl: "templates/tabs.html",
-    // The tab requires user login
-    data: {
-      requiresLogin: true
-    }
-  })
+    .state('login', {
+      url: '/login',
+      templateUrl: 'templates/login.html',
+      controller: 'LoginCtrl',
+    })
+    .state('tabs.account', {
+      url: "/account",
+      views: {
+        'account-tab': {
+          templateUrl: "templates/tab-account.html",
+          controller: 'AccountCtrl'
+        }
+      }
+    })
+    .state('tabs', {
+      url: "/tab",
+      abstract: true,
+      templateUrl: "templates/tabs.html",
+      // The tab requires user login
+      data: {
+        requiresLogin: true
+      }
+    })
     .state('tabs.about', {
       url: "/about",
       views: {
@@ -115,16 +124,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
             controller: 'GetTogetherDetailCtrl'
           }
         }
-      })
-      .state('tabs.account', {
-        url: "/account",
-        views: {
-          'account-tab': {
-            templateUrl: "templates/tab-account.html"
-          }
-        }
       });
 
+
+      console.log('authProvider.init');
       authProvider.init({
        domain: 'joeshmuuz.auth0.com',
        clientID: 'ZaINHe6gCLQ8oqzbUYCKqt9WDJfS68df',
@@ -132,10 +135,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
      });
 
 
-     $urlRouterProvider.otherwise("/tab/about");
-
      // if none of the above states are matched, use this as the fallback
-     $urlRouterProvider.otherwise('/tab/dash');
+     $urlRouterProvider.otherwise('/tab/account');
 
      jwtInterceptorProvider.tokenGetter = function(store, jwtHelper, auth) {
        var idToken = store.get('token');
