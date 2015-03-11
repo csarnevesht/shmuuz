@@ -10,7 +10,7 @@ The GetTogethers service returns an array of getTogethers data
       <div  class="item item-input-inset">
         <label class="item-input-wrapper" id="search-input">
           <i class="icon ion-search placeholder-icon"></i>
-          <input type="text" placeholder="Search" ng-model="data.query" ng-change="search()">
+          <input type="text" placeholder="Search for image" ng-model="data.query" ng-change="search()">
         </label>
       </div>
       <div id="photos" class="clearfix">
@@ -18,7 +18,7 @@ The GetTogethers service returns an array of getTogethers data
           <img ng-src="{{ photo.media.m }}">
         </div>
       </div>
-      <img ng-src="{{getTogether.image}}" style="width: 128px; height: 128px">
+      <img ng-src="{{getTogether.image}}" style="width: 128px; height: 128px" ng-show="getTogether.image">
       <h3>{{getTogether.name}}</h3>
       <p>
         {{getTogether.address}}
