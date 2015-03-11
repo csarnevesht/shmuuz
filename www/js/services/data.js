@@ -1,7 +1,7 @@
 /**
  * A simple example service that returns some data.
  */
-servicesModule.factory('Data', function($q, $http, FIREBASE_URL, $firebase, $rootScope) {
+servicesModule.factory('Data', function($q, $http, FIREBASE_URL, $firebase, $rootScope, store) {
   console.log('Data service');
   console.log('FIREBASE_URL', FIREBASE_URL);
 
@@ -11,8 +11,14 @@ servicesModule.factory('Data', function($q, $http, FIREBASE_URL, $firebase, $roo
   var getTogethers = [];
   var userDefaults = {};
 
-  // console.log('getting Firebase ref');
   var ref= new Firebase(FIREBASE_URL + '/getTogethers');
+  ref.authWithCustomToken(store.get('firebaseToken'), function(error, auth) {
+    if (error) {
+      // There was an error logging in, redirect the user to login page
+      $state.go('login');
+    }
+  });
+
   var sync = $firebase(ref);
 
   // bind the getTogethers to the firebase provider

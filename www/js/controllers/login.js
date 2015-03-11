@@ -11,10 +11,14 @@ app.controller('LoginCtrl', function($scope, auth, $state, $location, store) {
     store.set('profile', profile);
     store.set('token', idToken);
     store.set('refreshToken', refreshToken);
-    // $state.go('tabs.account');
-    $location.path('/');
-    console.log('profile ', profile);
-    console.log('setting $scope.auth to auth, ', $scope.auth);
+    auth.getToken({
+      api: 'firebase'
+    }).then(function(delegation) {
+      store.set('firebaseToken', delegation.id_token);
+      $state.go('tabs.account');
+    }, function(error) {
+      console.log("There was an error logging in", error);
+    })
   }, function(error) {
     console.log("There was an error logging in", error);
   });

@@ -5,24 +5,19 @@ The GetTogethersCtrl pulls data from the GetTogethers service (service.js)
 The GetTogethers service returns an array of getTogethers data
 -->
 <ion-view view-title="{{getTogether.name}}">
+  <ion-content class="padding" push-search>
     <div id="search-bar">
-      <br>
-      <div class="item item-input-inset">
+      <div  class="item item-input-inset">
         <label class="item-input-wrapper" id="search-input">
           <i class="icon ion-search placeholder-icon"></i>
           <input type="text" placeholder="Search" ng-model="data.query" ng-change="search()">
         </label>
       </div>
-    </div>
-
-    <ion-content class="padding"  id="content" push-search>
-
       <div id="photos" class="clearfix">
         <div class="photo" ng-repeat="photo in photos.items" ng-click="selectImage(photo)">
           <img ng-src="{{ photo.media.m }}">
         </div>
       </div>
-
       <img ng-src="{{getTogether.image}}" style="width: 128px; height: 128px">
       <h3>{{getTogether.name}}</h3>
       <p>
@@ -31,8 +26,6 @@ The GetTogethers service returns an array of getTogethers data
       <p>
         {{getTogether.notes}}
       </p>
-
-
 
       <form ng-submit="saveMe(getTogether)">
         <div class="list">
@@ -63,6 +56,6 @@ The GetTogethers service returns an array of getTogethers data
         <div class="padding">
         </div>
       </form>
-
+    </div>
   </ion-content>
 </ion-view>
