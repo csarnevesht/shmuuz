@@ -108,21 +108,21 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
          }
        }
     })
-    .state('tabs.get-togethers', {
-        url: '/get-togethers',
+    .state('tabs.events', {
+        url: '/events',
         views: {
-          'get-togethers-tab': {
-            templateUrl: 'templates/tab-get-togethers.html',
-            controller: 'GetTogethersCtrl'
+          'events-tab': {
+            templateUrl: 'templates/tab-events.html',
+            controller: 'eventsCtrl'
           }
         }
       })
-      .state('tabs.get-together-detail', {
-        url: '/get-together/:getTogetherId',
+      .state('tabs.event-detail', {
+        url: '/event/:eventId',
         views: {
-          'get-togethers-tab': {
-            templateUrl: 'templates/get-together-detail.html',
-            controller: 'GetTogetherDetailCtrl'
+          'events-tab': {
+            templateUrl: 'templates/event-detail.html',
+            controller: 'eventDetailCtrl'
           }
         }
       });

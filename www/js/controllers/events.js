@@ -1,7 +1,22 @@
-app.controller('GetTogethersCtrl', function($scope, $rootScope, $q, $state, $ionicLoading, $ionicModal, $compile, $timeout, $http, Data, StreetView) {
-  console.log('in GetTogethersCtrl controller');
+app.controller('eventsCtrl', function($scope,
+                                            $rootScope,
+                                            $q,
+                                            $state,
+                                            auth,
+                                            $ionicLoading,
+                                            $ionicModal,
+                                            $compile,
+                                            $timeout,
+                                            $http,
+                                            Data,
+                                            StreetView) {
+  console.log('in eventsCtrl controller');
+  $scope.profile = auth.profile;
+  console.log('eventsCtrl auth', auth);
+  $scope.auth = auth;
 
   $rootScope.infowindow = new  google.maps.InfoWindow();
+
   $scope.search = {};
   $scope.data = {
     showDelete: false,
@@ -10,7 +25,7 @@ app.controller('GetTogethersCtrl', function($scope, $rootScope, $q, $state, $ion
   $scope.search.text = "";
   $scope.map;
   $scope.newMarker;
-  $scope.getTogethers = $rootScope.getTogethers;
+  $scope.events = $rootScope.events;
   $scope.markers = $rootScope.markers = [];
   var homeMarker;
 
@@ -29,30 +44,30 @@ app.controller('GetTogethersCtrl', function($scope, $rootScope, $q, $state, $ion
         Data.getUserDefaults()
       ]).then(function(data) {
         console.log('CAROLINA data', data);
-        $scope.getTogethers = data[0];
+        $scope.events = data[0];
         $scope.userDefaults = data[1].data.user.defaults;
         console.log('CAROLINA userDefaults', $scope.userDefaults);
 
         $scope.loc = {lat: $scope.userDefaults.center[0], lon: $scope.userDefaults.center[1]};
 
-        console.log('finished loading data', '$scope.getTogethers');
+        console.log('finished loading data', '$scope.events');
         console.log('in Data.init().then()');
-        console.log('GetTogethersCtrl: $scope.getTogethers', $scope.getTogethers);
+        console.log('eventsCtrl: $scope.events', $scope.events);
         console.log('map',map);
-        console.log('$scope.getTogethers', $scope.getTogethers);
+        console.log('$scope.events', $scope.events);
         console.log('$scope.userDefaults ', $scope.userDefaults);
         console.log('$scope.loc ', $scope.loc);
 
         // Create our modal
-        $ionicModal.fromTemplateUrl('get-together.html', function(modal) {
+        $ionicModal.fromTemplateUrl('event.html', function(modal) {
           console.log('modal ', modal);
-          $scope.getTogetherModal = modal;
+          $scope.eventModal = modal;
         }, {
           scope: $scope,
           animation: 'slde-in-up'
         });
 
-        $scope.getTogethers.$loaded().then(function(list) {
+        $scope.events.$loaded().then(function(list) {
           console.log('CAROLINA loaded list',list);
           console.log('*forEach');
           angular.forEach(list, function(g) {
@@ -76,7 +91,7 @@ app.controller('GetTogethersCtrl', function($scope, $rootScope, $q, $state, $ion
      return (index % 2) === 0 ? 50 : 60;
    };
 
-  // Add infowindow to existing get-togethers markers
+  // Add infowindow to existing events markers
   // This function is passed to the app-map directive via the markerinfo argument
   $scope.setMarkerInfoListener = function(marker, apply) {
     console.log('setMarkerInfoListener marker', marker);
@@ -94,13 +109,13 @@ app.controller('GetTogethersCtrl', function($scope, $rootScope, $q, $state, $ion
 
           if($rootScope.infowindow) $rootScope.infowindow.close();
           if(!marker.data) marker.data = {};
-          marker.data.prompt = 'Click me to view get-together';
+          marker.data.prompt = 'Click me to view event';
           marker.__content = '<div id="infowindow_content" ng-include src="\'infowindow.html\'"></div>';
           marker.__infowindow = new google.maps.InfoWindow();
           marker.__compiled = $compile(marker.__content)(scope);
           marker.__infowindow.setContent( marker.__compiled[0] );
-          scope.getTogether = marker.data;
-          console.log('scope.getTogether', scope.getTogether);
+          scope.event = marker.data;
+          console.log('scope.event', scope.event);
           scope.$apply();
           marker.__infowindow.open(map, marker);
           $rootScope.infowindow = marker.__infowindow;
@@ -155,7 +170,7 @@ app.controller('GetTogethersCtrl', function($scope, $rootScope, $q, $state, $ion
                                 placeName = results[0].formatted_address,
                                 position = new google.maps.LatLng(lat, lng);
 
-                            var getTogether = {
+                            var event = {
                                   "id": -9,
                                   "name": "",
                                   "address": placeName,
@@ -165,8 +180,8 @@ app.controller('GetTogethersCtrl', function($scope, $rootScope, $q, $state, $ion
                                   "longitude" : event.latLng.lng(),
                                   "position" : position
                                 };
-                            $scope.getTogether = getTogether;
-                            getTogether.prompt = 'Click me to create new get-together';
+                            $scope.event = event;
+                            event.prompt = 'Click me to create new event';
                             $scope.$apply();
                             moveMarker(map, m, $rootScope.infowindow, placeName, position);
 
@@ -195,37 +210,42 @@ app.controller('GetTogethersCtrl', function($scope, $rootScope, $q, $state, $ion
 
   $scope.clickMe = function() {
       console.log('clickMe');
-      var getTogether = $scope.getTogether;
-      console.log('getTogether', getTogether);
-      console.log('typeof getTogether.date', typeof getTogether.date);
-      console.log('typeof getTogether.time', typeof getTogether.time);
+      var event = $scope.event;
+      console.log('event', event);
+      console.log('typeof event.date', typeof event.date);
+      console.log('typeof event.time', typeof event.time);
 
-      getTogether.date = new Date(getTogether.__date);
-      getTogether.time = new Date(getTogether.__time);
-      $scope.getTogetherModal.show();
+      event.date = new Date(event.__date);
+      event.time = new Date(event.__time);
+      $scope.eventModal.show();
   };
 
   $scope.closeMe = function() {
       console.log('closeMe');
-      $scope.getTogetherModal.hide();
+      $scope.eventModal.hide();
   };
 
 
 
-  $scope.handleGetTogether = function(g) {
-      console.log('handleGetTogether', g);
+  $scope.handleevent = function(g) {
+      console.log('handleevent', g);
       console.log('$scope', $scope);
       var map = $rootScope.map;
       var image = 'http://www.google.com/intl/en_us/mapfiles/ms/micons/red-dot.png';
       if(g.id == -9) {
          delete g.id;
          delete g.prompt;
-         var getTogether = Data.addGetTogether(g);
-         console.log('handleGetTogether: getTogether.id', getTogether.id);
+        //  CAROLINA TODO
+         g.owner = {
+           name: $scope.auth.profile.name,
+           id: $scope.auth.profile.user_id
+         };
+         console.log('saving event', g);
+         var event = Data.addevent(g);
          console.log('$scope.newMarker', $scope.newMarker);
          $scope.newMarker.setVisible(false);
-         var position = new google.maps.LatLng(getTogether.latitude, getTogether.longitude);
-         var mm = new google.maps.Marker({ position: position, map: map, title: getTogether.name, data: getTogether });
+         var position = new google.maps.LatLng(event.latitude, event.longitude);
+         var mm = new google.maps.Marker({ position: position, map: map, title: event.name, data: event });
          $scope.markers.push(mm);
          mm.setVisible(true);
 
@@ -238,9 +258,9 @@ app.controller('GetTogethersCtrl', function($scope, $rootScope, $q, $state, $ion
 
       }
       else {
-        $state.go("tabs.get-together-detail", {getTogetherId : g.id});
+        $state.go("tabs.event-detail", {eventId : g.id});
       }
-      $scope.getTogetherModal.hide();
+      $scope.eventModal.hide();
 
   };
 
@@ -251,7 +271,7 @@ app.controller('GetTogethersCtrl', function($scope, $rootScope, $q, $state, $ion
       map = $rootScope.map;
 
       $rootScope.infowindow.close();
-      delete $scope.getTogether;
+      delete $scope.event;
 
       $scope.loading = $ionicLoading.show({
         content: 'Getting current location...',
@@ -347,12 +367,12 @@ app.controller('GetTogethersCtrl', function($scope, $rootScope, $q, $state, $ion
 
   $scope.showStreetView = function() {
     StreetView.setPanorama(map, $scope.panoId);
-    $scope.getTogetherInfo.hide();
+    $scope.eventInfo.hide();
   };
   $scope.showHybridView = function() {
     map.setMapTypeId(google.maps.MapTypeId.HYBRID);
     map.setTilt(45);
-    $scope.getTogetherInfo.hide();
+    $scope.eventInfo.hide();
   };
 
 
@@ -366,21 +386,21 @@ app.controller('GetTogethersCtrl', function($scope, $rootScope, $q, $state, $ion
     $scope.details = function(item, index) {
       // alert('Details of Item: ' + item.id);
       console.log('details index', index);
-      console.log('$scope.getTogethers.indexOf(item)', $scope.getTogethers.indexOf(item));
+      console.log('$scope.events.indexOf(item)', $scope.events.indexOf(item));
       item.date = new Date(item.__date);
       item.time = new Date(item.__time);
-      $state.go("tabs.get-together-detail", {getTogetherId : index});
+      $state.go("tabs.event-detail", {eventId : index});
     };
 
     $scope.moveItem = function(item, fromIndex, toIndex) {
-      $scope.getTogethers.splice(fromIndex, 1);
-      $scope.getTogethers.splice(toIndex, 0, item);
+      $scope.events.splice(fromIndex, 1);
+      $scope.events.splice(toIndex, 0, item);
     };
 
     $scope.deleteItem = function(item) {
       console.log('deleteItem item', item);
-      // $scope.getTogethers.splice($scope.getTogethers.indexOf(item), 1);
-      Data.deleteGetTogether(item);
+      // $scope.events.splice($scope.events.indexOf(item), 1);
+      Data.deleteevent(item);
     };
 
 
@@ -401,10 +421,10 @@ app.directive('fullScreenToggle', function() {
     }
 });
 
-app.directive('getTogetherInfo', function() {
-    console.log('**** getTogetherInfo directive');
+app.directive('eventInfo', function() {
+    console.log('**** eventInfo directive');
 
-    var GetTogetherInfo = function(s, e, a) {
+    var eventInfo = function(s, e, a) {
       this.scope = s;
       this.element = e;
       this.attrs = a;
@@ -417,10 +437,10 @@ app.directive('getTogetherInfo', function() {
       }
     };
     return {
-      templateUrl: 'get-together-info.html',
+      templateUrl: 'event-info.html',
       link: function(scope, e, a) {
-        console.log('getTogetherInfo directive link function');
-        scope.getTogetherInfo= new GetTogetherInfo(scope, e, a);
+        console.log('eventInfo directive link function');
+        scope.eventInfo= new eventInfo(scope, e, a);
       }
     }
 });
@@ -491,12 +511,12 @@ app.directive('googleplace', function() {
 });
 
 
-app.controller('GetTogetherDetailCtrl', function($scope, $stateParams, Data, Flickr) {
+app.controller('eventDetailCtrl', function($scope, $stateParams, Data, Flickr) {
     $scope.data = {};
-    console.log('GetTogetherDetailCtrl');
+    console.log('eventDetailCtrl');
     console.log('$stateParams', $stateParams);
-    $scope.getTogether = Data.getGetTogether($stateParams.getTogetherId);
-    console.log('GetTogetherDetailCtrl getTogether', $scope.getTogether);
+    $scope.event = Data.getevent($stateParams.eventId);
+    console.log('eventDetailCtrl event', $scope.event);
 
 
     var doSearch = ionic.debounce(function(query) {
@@ -507,22 +527,22 @@ app.controller('GetTogetherDetailCtrl', function($scope, $stateParams, Data, Fli
     }, 500);
 
     $scope.search = function() {
-      console.log('GetTogetherDetailCtrl $scope.data.query', $scope.data.query);
+      console.log('eventDetailCtrl $scope.data.query', $scope.data.query);
       doSearch($scope.data.query);
     };
 
     $scope.selectImage = function(photo) {
       console.log('selectImage photo', photo);
-      console.log('selectImage getTogether', $scope.getTogether);
-      $scope.getTogether.image = photo.media.m;
-      // $scope.getTogether.image = photo;
-      console.log('selectImage getTogether.image', $scope.getTogether.image);
+      console.log('selectImage event', $scope.event);
+      $scope.event.image = photo.media.m;
+      // $scope.event.image = photo;
+      console.log('selectImage event.image', $scope.event.image);
 
     }
 
     $scope.saveMe = function(g) {
-      console.log('GetTogetherDetailCtrl::saveMe', g);
-      Data.saveGetTogether(g);
+      console.log('eventDetailCtrl::saveMe', g);
+      Data.saveevent(g);
     }
 })
 

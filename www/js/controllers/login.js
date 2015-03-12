@@ -15,6 +15,11 @@ app.controller('LoginCtrl', function($scope, auth, $state, $location, store) {
       api: 'firebase'
     }).then(function(delegation) {
       store.set('firebaseToken', delegation.id_token);
+
+
+      // CAROLINA HERE: add user to user table.
+      // If user not in user table, then create user, otherwise update data
+
       $state.go('tabs.account');
     }, function(error) {
       console.log("There was an error logging in", error);

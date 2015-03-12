@@ -1,10 +1,10 @@
 <!--
-This template loads for the 'tab.get-together-detail' state (app.js)
-'getTogether' is a $scope variable created in the GetTogethersCtrl controller (controllers.js)
-The GetTogethersCtrl pulls data from the GetTogethers service (service.js)
-The GetTogethers service returns an array of getTogethers data
+This template loads for the 'tab.event-detail' state (app.js)
+'event' is a $scope variable created in the eventsCtrl controller (controllers.js)
+The eventsCtrl pulls data from the events service (service.js)
+The events service returns an array of events data
 -->
-<ion-view view-title="{{getTogether.name}}">
+<ion-view view-title="{{event.name}}">
   <ion-content class="padding" push-search>
     <div id="search-bar">
       <div  class="item item-input-inset">
@@ -18,35 +18,35 @@ The GetTogethers service returns an array of getTogethers data
           <img ng-src="{{ photo.media.m }}">
         </div>
       </div>
-      <img ng-src="{{getTogether.image}}" style="width: 128px; height: 128px" ng-show="getTogether.image">
-      <h3>{{getTogether.name}}</h3>
+      <img ng-src="{{event.image}}" style="width: 128px; height: 128px" ng-show="event.image">
+      <h3>{{event.name}}</h3>
       <p>
-        {{getTogether.address}}
+        {{event.address}}
       </p>
       <p>
-        {{getTogether.notes}}
+        {{event.notes}}
       </p>
 
-      <form ng-submit="saveMe(getTogether)">
+      <form ng-submit="saveMe(event)">
         <div class="list">
           <label class="item item-input">
             <span class="input-label">Name</span>
-            <input type="text" ng-model="getTogether.name">
+            <input type="text" ng-model="event.name">
           </label>
           <label class="item item-input">
             <span class="input-label">Date</span>
-            <input type="date" ng-model="getTogether.date" value="{{getTogether.date}}">
-            <!-- &nbsp;{{getTogether.date | date: 'fullDate'}} -->
+            <input type="date" ng-model="event.date" value="{{event.date}}">
+            <!-- &nbsp;{{event.date | date: 'fullDate'}} -->
           </label>
           <label class="item item-input">
             <span class="input-label">Time</span>
-            <input type="time" ng-model="getTogether.time" value="{{getTogether.time}}">
-            <!-- &nbsp;{{getTogether.time | date: 'shortDate'}} -->
+            <input type="time" ng-model="event.time" value="{{event.time}}">
+            <!-- &nbsp;{{event.time | date: 'shortDate'}} -->
 
           </label>
           <label class="item item-input">
               <span class="input-label">Address</span>
-              <input type="text" ng-model="getTogether.address">
+              <input type="text" ng-model="event.address">
           </label>
         </div>
         <div class="item item-input-inset">
