@@ -75,10 +75,10 @@ servicesModule.service('Users', function($state, $q, $http, FIREBASE_URL, $fireb
       }
     }, function(error, committed) {
       if(!committed) {
-        alert('user ' + profile.user_id + ' already exists!');
+        console.log('user ' + profile.user_id + ' already exists!');
       }
       else {
-        alert('Successfully created ' + profile.user_id);
+        console.log('Successfully created ' + profile.user_id);
       }
     });
   }

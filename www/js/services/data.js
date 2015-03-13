@@ -41,8 +41,8 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
   function _add(data) {
       var od = data.date;
       var ot = data.time;
-      data.__date = data.date.getTime();
-      data.__time = data.time.getTime();
+      data.date_ = data.date.getTime();
+      data.time_ = data.time.getTime();
       sync.$push(angular.fromJson(angular.toJson(data))).then(function(newChildRef) {
         var g = events[events.length-1];
         g.date = od;
@@ -53,9 +53,18 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
   function _update(data) {
     var od = data.date;
     var ot = data.time;
-    data.__date = data.date.getTime();
-    data.__time = data.time.getTime();
-    events.$save(angular.fromJson(angular.toJson(data)));
+    data.date_ = data.date.getTime();
+    data.time_ = data.time.getTime();
+    // data.datenum = data.date.getTime();
+    // data.timenum = data.time.getTime();
+    console.log('typeof data.date_', typeof data.date_);
+    console.log('Data::_update() json str', angular.fromJson(angular.toJson(data)));
+    // events.$save(angular.fromJson(angular.toJson(data)));
+    data.date = data.date.toString();
+    data.time = data.time.toString();
+
+    events.$save(data);
+
   }
 
   function initialize() {
@@ -73,8 +82,8 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
                 console.log('Data::initialize() events', events);
                 events.$loaded().then(function(list) {
                   angular.forEach(list, function(g) {
-                    g.date = new Date(g.__date);
-                    g.time = new Date(g.__time);
+                    g.date = new Date(g.date_);
+                    g.time = new Date(g.time_);
                   });
                   console.log('DataServiceReady');
                   $rootScope.$broadcast('DataServiceReady');
@@ -94,8 +103,8 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
                           console.log('read events from data.json', __g);
                           for (var i = 0; i < __g.length; i++) {
                             var g = __g[i];
-                            g.date = new Date(g.__date);
-                            g.time = new Date(g.__time);
+                            g.date = new Date(g.date_);
+                            g.time = new Date(g.time_);
                             console.log('storing ', g);
                             _add(g);
                             g.id = i;
@@ -165,10 +174,10 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
         }
       }, function(error, committed) {
         if(!committed) {
-          alert('attendee ' + userid + ' already exists!');
+          console.log('attendee ' + userid + ' already exists!');
         }
         else {
-          alert('Successfully added ' + userid);
+          console.log('Successfully added ' + userid);
         }
       });
 

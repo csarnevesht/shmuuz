@@ -45,13 +45,40 @@ The events service returns an array of events data
             <span class="input-label">Time</span>
             <input type="time" ng-model="event.time" value="{{event.time}}" ng-disabled="event.organizer.id != auth.profile.user_id">
             <!-- &nbsp;{{event.time | date: 'shortDate'}} -->
-
           </label>
           <label class="item item-input">
               <span class="input-label">Address</span>
               <input type="text" ng-model="event.address" ng-disabled="event.organizer.id != auth.profile.user_id">
           </label>
+<!--
+          <ion-slide-box slide-interval="5000" auto-play="true" does-continue="true" show-pager="false">
+              <ion-slide ng-repeat="attendee in attendees">
+                {{attendee.name}}<br>
+                <img ng-src="{{ attendee.picture }}">
+              </ion-slide>
+          </ion-slide-box> -->
+
+          <div class="item item-body">
+            <div>
+              Attendees
+            </div>
+          </div>
+
+
+
         </div>
+        <ion-list>
+          <ion-item class="item-avatar" ng-repeat="attendee in attendees" type="item-text-wrap">
+            <div class="row row-center">
+              <div class="col-50"><img ng-src="{{attendee.picture}}" width="100px" height="100px"></div>
+              <h2>{{attendee.name}}</h2>
+              <!-- <div class="col-25 col-offset-10">{{attendee.name}}</div> -->
+            </div>
+          </ion-item>
+        </ion-list>
+
+
+
         <div class="item item-input-inset">
             <button type="submit" class="button button-block button-positive" ng-show="event.organizer.id === auth.profile.user_id" ng-click="saveMe(event)">Save</button>
         </div>

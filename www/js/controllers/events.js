@@ -176,7 +176,7 @@ app.controller('EventsCtrl', function($scope,
                                   "name": "",
                                   "address": placeName,
                                   "notes": "",
-                                  "img": "",
+                                  "image": "",
                                   "latitude": event.latLng.lat(),
                                   "longitude" : event.latLng.lng(),
                                   "position" : position
@@ -217,8 +217,8 @@ app.controller('EventsCtrl', function($scope,
       console.log('typeof event.date', typeof event.date);
       console.log('typeof event.time', typeof event.time);
 
-      event.date = new Date(event.__date);
-      event.time = new Date(event.__time);
+      event.date = new Date(event.date_);
+      event.time = new Date(event.time_);
       $scope.eventModal.show();
   };
 
@@ -388,8 +388,8 @@ app.controller('EventsCtrl', function($scope,
       // alert('Details of Item: ' + item.id);
       console.log('details index', index);
       console.log('$scope.events.indexOf(item)', $scope.events.indexOf(item));
-      item.date = new Date(item.__date);
-      item.time = new Date(item.__time);
+      item.date = new Date(item.date_);
+      item.time = new Date(item.time_);
       $state.go("tabs.event-detail", {eventId : index});
     };
 
