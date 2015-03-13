@@ -1,4 +1,4 @@
-app.controller('eventsCtrl', function($scope,
+app.controller('EventsCtrl', function($scope,
                                             $rootScope,
                                             $q,
                                             $state,
@@ -9,10 +9,11 @@ app.controller('eventsCtrl', function($scope,
                                             $timeout,
                                             $http,
                                             Data,
+                                            Users,
                                             StreetView) {
-  console.log('in eventsCtrl controller');
+  console.log('in EventsCtrl controller');
   $scope.profile = auth.profile;
-  console.log('eventsCtrl auth', auth);
+  console.log('EventsCtrl auth', auth);
   $scope.auth = auth;
 
   $rootScope.infowindow = new  google.maps.InfoWindow();
@@ -44,15 +45,15 @@ app.controller('eventsCtrl', function($scope,
         Data.getUserDefaults()
       ]).then(function(data) {
         console.log('CAROLINA data', data);
-        $scope.events = data[0];
         $scope.userDefaults = data[1].data.user.defaults;
+        $scope.events = data[0];
         console.log('CAROLINA userDefaults', $scope.userDefaults);
 
         $scope.loc = {lat: $scope.userDefaults.center[0], lon: $scope.userDefaults.center[1]};
 
         console.log('finished loading data', '$scope.events');
         console.log('in Data.init().then()');
-        console.log('eventsCtrl: $scope.events', $scope.events);
+        console.log('EventsCtrl: $scope.events', $scope.events);
         console.log('map',map);
         console.log('$scope.events', $scope.events);
         console.log('$scope.userDefaults ', $scope.userDefaults);
@@ -106,6 +107,8 @@ app.controller('eventsCtrl', function($scope,
         return function(event){
           console.log('**** existing marker click **** scope', scope);
           console.log('map', map);
+          console.log('**** existing marker click **** scope.auth.profile', scope.auth.profile);
+          // console.log('**** existing marker click **** scope.event.organizer', scope.event.organizer);
 
           if($rootScope.infowindow) $rootScope.infowindow.close();
           if(!marker.data) marker.data = {};
@@ -151,8 +154,6 @@ app.controller('eventsCtrl', function($scope,
               return function (event) {
                   console.log ('map click');
                   console.log('event', event);
-                  console.log('g', event);
-
 
                   $rootScope.infowindow.close();
                   $rootScope.infowindow = new google.maps.InfoWindow();
@@ -170,7 +171,7 @@ app.controller('eventsCtrl', function($scope,
                                 placeName = results[0].formatted_address,
                                 position = new google.maps.LatLng(lat, lng);
 
-                            var event = {
+                            var _event = {
                                   "id": -9,
                                   "name": "",
                                   "address": placeName,
@@ -180,8 +181,8 @@ app.controller('eventsCtrl', function($scope,
                                   "longitude" : event.latLng.lng(),
                                   "position" : position
                                 };
-                            $scope.event = event;
-                            event.prompt = 'Click me to create new event';
+                            $scope.event = _event;
+                            _event.prompt = 'Click me to create new event';
                             $scope.$apply();
                             moveMarker(map, m, $rootScope.infowindow, placeName, position);
 
@@ -209,7 +210,8 @@ app.controller('eventsCtrl', function($scope,
   }//moveMarker
 
   $scope.clickMe = function() {
-      console.log('clickMe');
+      console.log('clickMe $scope.auth.profile', $scope.auth.profile);
+      console.log('clickMe $scope.event.organizer', $scope.event.organizer);
       var event = $scope.event;
       console.log('event', event);
       console.log('typeof event.date', typeof event.date);
@@ -235,11 +237,10 @@ app.controller('eventsCtrl', function($scope,
       if(g.id == -9) {
          delete g.id;
          delete g.prompt;
-        //  CAROLINA TODO
-         g.owner = {
-           name: $scope.auth.profile.name,
-           id: $scope.auth.profile.user_id
-         };
+         g.organizer = {
+           id: $scope.auth.profile.user_id,
+           name: $scope.auth.profile.name
+         }
          console.log('saving event', g);
          var event = Data.addevent(g);
          console.log('$scope.newMarker', $scope.newMarker);
@@ -511,13 +512,24 @@ app.directive('googleplace', function() {
 });
 
 
-app.controller('eventDetailCtrl', function($scope, $stateParams, Data, Flickr) {
+app.controller('EventDetailCtrl', function($scope, $stateParams, Data, Users, Flickr, auth) {
     $scope.data = {};
-    console.log('eventDetailCtrl');
+    $scope.auth = auth;
+    console.log('EventDetailCtrl');
     console.log('$stateParams', $stateParams);
     $scope.event = Data.getevent($stateParams.eventId);
-    console.log('eventDetailCtrl event', $scope.event);
+    console.log('EventDetailCtrl event', $scope.event);
+    $scope.attendees = [];
 
+    if($scope.event.attendees) {
+      angular.forEach($scope.event.attendees, function(attendee) {
+        console.log('attendee ', attendee);
+        var attendeeId = attendee;
+        var user = Users.get(attendeeId);
+        $scope.attendees.push(user);
+      });
+      console.log('$scope.attendees ', $scope.attendees);
+    }
 
     var doSearch = ionic.debounce(function(query) {
       Flickr.search(query).then(function(resp) {
@@ -527,7 +539,7 @@ app.controller('eventDetailCtrl', function($scope, $stateParams, Data, Flickr) {
     }, 500);
 
     $scope.search = function() {
-      console.log('eventDetailCtrl $scope.data.query', $scope.data.query);
+      console.log('EventDetailCtrl $scope.data.query', $scope.data.query);
       doSearch($scope.data.query);
     };
 
@@ -540,9 +552,16 @@ app.controller('eventDetailCtrl', function($scope, $stateParams, Data, Flickr) {
 
     }
 
-    $scope.saveMe = function(g) {
-      console.log('eventDetailCtrl::saveMe', g);
-      Data.saveevent(g);
+    $scope.saveMe = function(event) {
+      console.log('EventDetailCtrl::saveMe', event);
+      Data.saveevent(event);
+    }
+
+    $scope.registerMe = function(event) {
+      console.log('eventDetailCtr::registerMe', event);
+      var user = Users.get(auth.profile.user_id);
+      console.log('user', user);
+      Data.addAttendee(event, auth.profile.user_id);
     }
 })
 

@@ -113,7 +113,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         views: {
           'events-tab': {
             templateUrl: 'templates/tab-events.html',
-            controller: 'eventsCtrl'
+            controller: 'EventsCtrl'
           }
         }
       })
@@ -122,7 +122,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         views: {
           'events-tab': {
             templateUrl: 'templates/event-detail.html',
-            controller: 'eventDetailCtrl'
+            controller: 'EventDetailCtrl'
           }
         }
       });

@@ -151,6 +151,28 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
       console.log('newRef', newRef);
       newRef.remove();
     },
+    addAttendee: function(event, userid) {
+      console.log('Data::addAttendee to event', event);
+      console.log('userid', userid);
+      var eventRef = ref.child(event.$id);
+      var attendeesRef = eventRef.child('attendees');
+      // attendeesRef.push(userid);
+
+      var userData = userid;
+      attendeesRef.child(userid).transaction(function(currentUserData) {
+        if(currentUserData === null) {
+          return userData;
+        }
+      }, function(error, committed) {
+        if(!committed) {
+          alert('attendee ' + userid + ' already exists!');
+        }
+        else {
+          alert('Successfully added ' + userid);
+        }
+      });
+
+    },
     getUserDefaults: function() {
       console.log('Data service getUserDefaults()');
       var deferred = $q.defer();

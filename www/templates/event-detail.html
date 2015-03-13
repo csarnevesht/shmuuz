@@ -1,14 +1,18 @@
 <!--
 This template loads for the 'tab.event-detail' state (app.js)
-'event' is a $scope variable created in the eventsCtrl controller (controllers.js)
-The eventsCtrl pulls data from the events service (service.js)
+'event' is a $scope variable created in the EventsCtrl controller (controllers.js)
+The EventsCtrl pulls data from the events service (service.js)
 The events service returns an array of events data
 -->
 <ion-view view-title="{{event.name}}">
+
   <ion-content class="padding" push-search>
     <div id="search-bar">
+      <!-- event.organizer.id {{event.organizer.id}}<br>
+      auth.profile.user_id {{auth.profile.user_id}}<br>
+      {{event.organizer.id === auth.profile.user_id}} -->
       <div  class="item item-input-inset">
-        <label class="item-input-wrapper" id="search-input">
+        <label class="item-input-wrapper" id="search-input"  ng-show="event.organizer.id === auth.profile.user_id">
           <i class="icon ion-search placeholder-icon"></i>
           <input type="text" placeholder="Search for image" ng-model="data.query" ng-change="search()">
         </label>
@@ -20,37 +24,40 @@ The events service returns an array of events data
       </div>
       <img ng-src="{{event.image}}" style="width: 128px; height: 128px" ng-show="event.image">
       <h3>{{event.name}}</h3>
-      <p>
-        {{event.address}}
-      </p>
-      <p>
-        {{event.notes}}
-      </p>
 
-      <form ng-submit="saveMe(event)">
+      <!-- <form ng-submit="saveMe(event)"> -->
+      <form>
         <div class="list">
           <label class="item item-input">
             <span class="input-label">Name</span>
-            <input type="text" ng-model="event.name">
+            <input type="text" ng-model="event.name" ng-disabled="event.organizer.id != auth.profile.user_id">
+          </label>
+          <label class="item item-input">
+            <span class="input-label">Organizer</span>
+            <input type="text" ng-model="event.organizer.name" ng-disabled='true'>
           </label>
           <label class="item item-input">
             <span class="input-label">Date</span>
-            <input type="date" ng-model="event.date" value="{{event.date}}">
+            <input type="date" ng-model="event.date" value="{{event.date}}" ng-disabled="event.organizer.id != auth.profile.user_id">
             <!-- &nbsp;{{event.date | date: 'fullDate'}} -->
           </label>
           <label class="item item-input">
             <span class="input-label">Time</span>
-            <input type="time" ng-model="event.time" value="{{event.time}}">
+            <input type="time" ng-model="event.time" value="{{event.time}}" ng-disabled="event.organizer.id != auth.profile.user_id">
             <!-- &nbsp;{{event.time | date: 'shortDate'}} -->
 
           </label>
           <label class="item item-input">
               <span class="input-label">Address</span>
-              <input type="text" ng-model="event.address">
+              <input type="text" ng-model="event.address" ng-disabled="event.organizer.id != auth.profile.user_id">
           </label>
         </div>
         <div class="item item-input-inset">
-            <button type="submit" class="button button-block button-positive">Save</button>
+            <button type="submit" class="button button-block button-positive" ng-show="event.organizer.id === auth.profile.user_id" ng-click="saveMe(event)">Save</button>
+        </div>
+
+        <div class="item item-input-inset">
+            <button type="submit" class="button button-block button-positive"ng-show="event.organizer.id != auth.profile.user_id" ng-click="registerMe(event)">Register</button>
         </div>
 
         <div class="padding">
