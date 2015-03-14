@@ -261,7 +261,7 @@ app.controller('EventsCtrl', function($scope,
 
       }
       else {
-        $state.go("tabs.event-detail", {eventId : g.id});
+        $state.go("tabs.event-detail", {eventId : Data.getEventIndex(g)});
       }
       $scope.eventModal.hide();
 

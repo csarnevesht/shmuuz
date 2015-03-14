@@ -118,3 +118,9 @@ TODO:
 figure out how it works... didn't require any facebook configuration.
 There is no firebase here.
 ***************************************
+
+TODO:
+- separate events from data.js
+- simplify event view, remove modal?
+- deletion of event:  update map, and update ids
+- when other user adds or deletes event, update map and ids

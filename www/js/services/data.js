@@ -9,6 +9,7 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
 
   var __g = [];
   var events = [];
+  var eventMap = [];
   var userDefaults = {};
 
   var ref= new Firebase(FIREBASE_URL + '/events');
@@ -36,7 +37,11 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
     console.log('child_changed', snapshot.key());
   });
 
-
+  function logMap() {
+    console.log('logMap');
+    console.log('events', events);
+    console.log('eventMap', eventMap);
+  };
 
   function _add(data) {
       var od = data.date;
@@ -44,9 +49,11 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
       data.date_ = data.date.getTime();
       data.time_ = data.time.getTime();
       sync.$push(angular.fromJson(angular.toJson(data))).then(function(newChildRef) {
-        var g = events[events.length-1];
-        g.date = od;
-        g.time = ot;
+        var event = events[events.length-1];
+        event.date = od;
+        event.time = ot;
+        eventMap[event.$id] = events.length-1;
+        logMap();
       });
   };
 
@@ -81,10 +88,13 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
                 events = sync.$asArray();
                 console.log('Data::initialize() events', events);
                 events.$loaded().then(function(list) {
-                  angular.forEach(list, function(g) {
-                    g.date = new Date(g.date_);
-                    g.time = new Date(g.time_);
+                  var i = 0;
+                  angular.forEach(list, function(event) {
+                    event.date = new Date(event.date_);
+                    event.time = new Date(event.time_);
+                    eventMap[event.$id] = i++;
                   });
+                  logMap();
                   console.log('DataServiceReady');
                   $rootScope.$broadcast('DataServiceReady');
                   deferred.resolve(events);
@@ -94,20 +104,21 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
             else {
                 console.log('Data::initialize empty db, initializing');
                 request.then(function(response){
-                          __g = response.data.events;
+                          __event = response.data.events;
                           console.log("db is empty, initializing db");
                           console.log('ref ' + ref.toString());
                           console.log('sync', sync);
                           sync.$push({events: []});
 
-                          console.log('read events from data.json', __g);
+                          console.log('read events from data.json', __event);
                           for (var i = 0; i < __g.length; i++) {
-                            var g = __g[i];
-                            g.date = new Date(g.date_);
-                            g.time = new Date(g.time_);
-                            console.log('storing ', g);
-                            _add(g);
-                            g.id = i;
+                            var event = __event[i];
+                            event.date = new Date(event.date_);
+                            event.time = new Date(event.time_);
+                            console.log('storing ', event);
+                            _add(event);
+                            // event.id = i;
+                            eventMap[event.$id] = i;
                           }
                           events = sync.$asArray();
                           console.log('Data::initialize() events', events);
@@ -130,7 +141,8 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
     },
     addevent: function(event) {
       console.log('Data service: addevent', event);
-      event.id = events.length;
+      // event.id = events.length;
+      eventMap[event.$id] = events.length;
       _add(event);
       // events.$save(event);
       console.log('Data service: addevent', events);
@@ -159,6 +171,10 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
       var newRef = ref.child(event.$id);
       console.log('newRef', newRef);
       newRef.remove();
+    },
+    getEventIndex: function(event) {
+      logMap();
+      return eventMap[event.$id];
     },
     addAttendee: function(event, userid) {
       console.log('Data::addAttendee to event', event);
