@@ -231,8 +231,8 @@ app.controller('EventsCtrl', function($scope,
 
 
 
-  $scope.handleevent = function(g) {
-      console.log('handleevent', g);
+  $scope.handleEvent = function(g) {
+      console.log('handleEvent', g);
       console.log('$scope', $scope);
       var map = $rootScope.map;
       var image = 'http://www.google.com/intl/en_us/mapfiles/ms/micons/red-dot.png';
@@ -244,7 +244,7 @@ app.controller('EventsCtrl', function($scope,
            name: $scope.auth.profile.name
          }
          console.log('saving event', g);
-         var event = Data.addevent(g);
+         var event = Data.addEvent(g);
          console.log('$scope.newMarker', $scope.newMarker);
          $scope.newMarker.setVisible(false);
          var position = new google.maps.LatLng(event.latitude, event.longitude);
@@ -403,7 +403,7 @@ app.controller('EventsCtrl', function($scope,
     $scope.deleteItem = function(item) {
       console.log('deleteItem item', item);
       // $scope.events.splice($scope.events.indexOf(item), 1);
-      Data.deleteevent(item);
+      Data.deleteEvent(item);
     };
 
 
@@ -519,7 +519,7 @@ app.controller('EventDetailCtrl', function($scope, $stateParams, Data, Users, Fl
     $scope.auth = auth;
     console.log('EventDetailCtrl');
     console.log('$stateParams', $stateParams);
-    $scope.event = Data.getevent($stateParams.eventId);
+    $scope.event = Data.getEvent($stateParams.eventId);
     console.log('EventDetailCtrl event', $scope.event);
     $scope.attendees = [];
 
@@ -556,7 +556,7 @@ app.controller('EventDetailCtrl', function($scope, $stateParams, Data, Users, Fl
 
     $scope.saveMe = function(event) {
       console.log('EventDetailCtrl::saveMe', event);
-      Data.saveevent(event);
+      Data.saveEvent(event);
     }
 
     $scope.registerMe = function(event) {

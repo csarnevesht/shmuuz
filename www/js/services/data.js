@@ -43,6 +43,16 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
     console.log('eventMap', eventMap);
   };
 
+  function updateMap() {
+    console.log('updateMap');
+    var i=0;
+    angular.forEach(events, function(event) {
+      eventMap[event.$id] = i++;
+    });
+    console.log('events', events);
+    console.log('eventMap', eventMap);
+  };
+
   function _add(data) {
       var od = data.date;
       var ot = data.time;
@@ -139,38 +149,39 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
         console.log('Data service init()');
         return initialize();
     },
-    addevent: function(event) {
-      console.log('Data service: addevent', event);
+    addEvent: function(event) {
+      console.log('Data service: addEvent', event);
       // event.id = events.length;
       eventMap[event.$id] = events.length;
       _add(event);
       // events.$save(event);
-      console.log('Data service: addevent', events);
+      console.log('Data service: addEvent', events);
       return event;
     },
-    saveevent: function(event) {
-      console.log('Data::saveevent event', event);
+    saveEvent: function(event) {
+      console.log('Data::saveEvent event', event);
       _update(event);
-      console.log('saveevent() event', event);
+      console.log('saveEvent() event', event);
     },
-    allevents: function() {
-      console.log('Data service allevents()', events);
+    allEvents: function() {
+      console.log('Data service allEvents()', events);
       // return events;
       var g = initialize();
       console.log('g', g);
       return g;
 
     },
-    getevent: function(eventId) {
-      console.log('Data:getevent( eventId=' + eventId + ')', events[eventId]);
+    getEvent: function(eventId) {
+      console.log('Data:getEvent( eventId=' + eventId + ')', events[eventId]);
       // Simple index lookup
       return events[eventId];
     },
-    deleteevent: function(event) {
-      console.log('Data::deleteevent event', event);
+    deleteEvent: function(event) {
+      console.log('Data::deleteEvent event', event);
       var newRef = ref.child(event.$id);
       console.log('newRef', newRef);
       newRef.remove();
+      updateMap();
     },
     getEventIndex: function(event) {
       logMap();
