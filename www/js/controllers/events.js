@@ -163,13 +163,15 @@ app.controller('EventsCtrl', function($scope,
                   g.geocode({
                       "latLng":event.latLng
                   }, function (results, status) {
-                        console.log('**** geocode result ****');
+                        console.log('**** geocode result ****', results);
 
                         if (status == google.maps.GeocoderStatus.OK) {
                             var lat = results[0].geometry.location.lat(),
                                 lng = results[0].geometry.location.lng(),
                                 placeName = results[0].formatted_address,
                                 position = new google.maps.LatLng(lat, lng);
+
+                            console.log('position', position);
 
                             var _event = {
                                   "id": -9,
