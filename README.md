@@ -120,7 +120,7 @@ There is no firebase here.
 ***************************************
 
 TODO:
+- selectImage causes save button to disappear
 - separate events from data.js
 - simplify event view, remove modal?
-- deletion of event:  update map, and update ids
 - when other user adds or deletes event, update map and ids

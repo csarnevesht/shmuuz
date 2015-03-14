@@ -121,7 +121,7 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
                           sync.$push({events: []});
 
                           console.log('read events from data.json', __event);
-                          for (var i = 0; i < __g.length; i++) {
+                          for (var i = 0; i < __event.length; i++) {
                             var event = __event[i];
                             event.date = new Date(event.date_);
                             event.time = new Date(event.time_);
