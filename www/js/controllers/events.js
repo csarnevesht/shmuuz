@@ -178,7 +178,6 @@ app.controller('EventsCtrl', function($scope,
                                   "name": "",
                                   "address": placeName,
                                   "notes": "",
-                                  "image": "",
                                   "latitude": event.latLng.lat(),
                                   "longitude" : event.latLng.lng(),
                                   "position" : position
@@ -226,6 +225,7 @@ app.controller('EventsCtrl', function($scope,
 
   $scope.closeMe = function() {
       console.log('closeMe');
+      $rootScope.infowindow.close();
       $scope.eventModal.hide();
   };
 
