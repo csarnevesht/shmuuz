@@ -94,6 +94,8 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
 
     events.$save(data);
 
+
+
   }
 
   function initialize() {
@@ -139,7 +141,6 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
                             event.time = new Date(event.time_);
                             console.log('storing ', event);
                             _add(event);
-                            // event.id = i;
                           }
                           events = sync.$asArray();
                           console.log('Data::initialize() events', events);
@@ -163,7 +164,6 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
     },
     addEvent: function(event) {
       console.log('Data service: addEvent', event);
-      // event.id = events.length;
       // eventMap[event.$id] = events.length;
       return _add(event);
     },
@@ -190,7 +190,14 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
       // var newRef = ref.child(event.$id);
       // console.log('newRef', newRef);
       // newRef.remove();
-      events.$remove(event);
+      logMap();
+      var index = events.indexOf(event);
+      events.$remove(event).then(function() {
+        console.log('after remove');
+        updateMap();
+        logMap();
+      });
+
     },
     getEventIndex: function(event) {
       logMap();

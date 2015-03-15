@@ -79,6 +79,7 @@ app.controller('EventsCtrl', function($scope,
             $scope.setMarkerInfoListener(marker, true);
             $scope.markers.push(marker);
             $scope.markerMap[e.$id] = marker;
+            console.log('markerMap', $scope.markerMap);
           });
           console.log('$scope.markers', $scope.markers);
           $scope.markerClusterer = new MarkerClusterer(map, $scope.markers, {});
@@ -101,6 +102,8 @@ app.controller('EventsCtrl', function($scope,
         $scope.needMarker = false;
         console.log('$scope.newMarker', $scope.newMarker);
         $scope.newMarker.setVisible(false);
+        event.date = new Date(event.date_);
+        event.time = new Date(event.time_);
         var position = new google.maps.LatLng(event.latitude, event.longitude);
         var mm = new google.maps.Marker({ position: position, map: map, title: event.name, data: event });
         $scope.markers.push(mm);
@@ -245,7 +248,6 @@ app.controller('EventsCtrl', function($scope,
       console.log('clickMe $scope.event.organizer', $scope.event.organizer);
       var event = $scope.event;
       console.log('event', event);
-      console.log('event.id', event.id);
 
 
       event.date = new Date(event.date_);
@@ -466,10 +468,23 @@ app.controller('EventsCtrl', function($scope,
     $scope.deleteItem = function(item) {
       console.log('deleteItem item', item);
       // $scope.events.splice($scope.events.indexOf(item), 1);
+      console.log('$scope.markerMap', $scope.markerMap);
+      var marker = $scope.markerMap[item.$id];
+      console.log('marker', marker);
+      if (marker) {
+        console.log('setting marker to not visible and deleting it');
+        marker.setVisible(false);
+        $scope.markers.splice($scope.markers.indexOf(marker));
+        $scope.markerClusterer = new MarkerClusterer(map, $scope.markers, {});
+        delete marker;
+        delete $scope.markerMap[event.$id];
+        // TODO delete listener handle
+      }
+      else {
+        console.log('marker not found in markerMap');
+      }
       Data.deleteEvent(item);
     };
-
-
 });
 
 
@@ -620,6 +635,9 @@ app.controller('EventDetailCtrl', function($scope, $rootScope, $stateParams, Dat
     $scope.saveMe = function(event) {
       console.log('EventDetailCtrl::saveMe', event);
       Data.saveEvent(event);
+
+      event.date = new Date(event.date_);
+      event.time = new Date(event.time_);
       console.log('$scope.eventSaved', $scope.eventSaved);
     };
 
