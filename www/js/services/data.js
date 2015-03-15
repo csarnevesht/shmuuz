@@ -27,10 +27,12 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
 
   ref.on("child_added", function(snapshot) {
     console.log('child_added', snapshot.key());
+    updateMap();
   });
 
   ref.on("child_removed", function(snapshot) {
     console.log('child_removed', snapshot.key());
+    updateMap();
   });
 
   ref.on("child_changed", function(snapshot) {
@@ -45,6 +47,7 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
 
   function updateMap() {
     console.log('updateMap');
+    eventMap = [];
     var i=0;
     angular.forEach(events, function(event) {
       eventMap[event.$id] = i++;
@@ -54,17 +57,26 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
   };
 
   function _add(data) {
+      var deferred = $q.defer();
+      console.log('_add');
       var od = data.date;
       var ot = data.time;
       data.date_ = data.date.getTime();
       data.time_ = data.time.getTime();
+      console.log('_add: adding data', data);
       sync.$push(angular.fromJson(angular.toJson(data))).then(function(newChildRef) {
+        console.log('newChildRef', newChildRef);
+        console.log('_add: pushed event, events', events);
+        console.log('_add: events length', events.length);
         var event = events[events.length-1];
+        console.log('_add: added event, ', event);
         event.date = od;
         event.time = ot;
         eventMap[event.$id] = events.length-1;
         logMap();
+        deferred.resolve(event);
       });
+      return deferred.promise;
   };
 
   function _update(data) {
@@ -128,11 +140,11 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
                             console.log('storing ', event);
                             _add(event);
                             // event.id = i;
-                            eventMap[event.$id] = i;
                           }
                           events = sync.$asArray();
                           console.log('Data::initialize() events', events);
                           events.$loaded().then(function(list) {
+                            // updateMap();
                             console.log('DataServiceReady');
                             $rootScope.$broadcast('DataServiceReady');
                             deferred.resolve(events);
@@ -152,11 +164,8 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
     addEvent: function(event) {
       console.log('Data service: addEvent', event);
       // event.id = events.length;
-      eventMap[event.$id] = events.length;
-      _add(event);
-      // events.$save(event);
-      console.log('Data service: addEvent', events);
-      return event;
+      // eventMap[event.$id] = events.length;
+      return _add(event);
     },
     saveEvent: function(event) {
       console.log('Data::saveEvent event', event);
@@ -178,10 +187,10 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
     },
     deleteEvent: function(event) {
       console.log('Data::deleteEvent event', event);
-      var newRef = ref.child(event.$id);
-      console.log('newRef', newRef);
-      newRef.remove();
-      updateMap();
+      // var newRef = ref.child(event.$id);
+      // console.log('newRef', newRef);
+      // newRef.remove();
+      events.$remove(event);
     },
     getEventIndex: function(event) {
       logMap();

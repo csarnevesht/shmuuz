@@ -4,7 +4,16 @@ This template loads for the 'tab.event-detail' state (app.js)
 The EventsCtrl pulls data from the events service (service.js)
 The events service returns an array of events data
 -->
+
+
+
 <ion-view view-title="{{event.name}}">
+
+  <ion-nav-bar class="bar-positive" ng-controller="EventDetailCtrl">
+    <ion-nav-back-button
+      ng-click="goBack()">
+    </ion-nav-back-button>
+  </ion-nav-bar>
 
   <ion-content class="padding" push-search>
     <div id="search-bar">

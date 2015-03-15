@@ -27,7 +27,8 @@ app.controller('EventsCtrl', function($scope,
   $scope.map;
   $scope.newMarker;
   $scope.events = $rootScope.events;
-  $scope.markers = $rootScope.markers = [];
+  $scope.markers = [];
+  $scope.markerMap = [];
   var homeMarker;
 
   // $scope.$on('$ionicView.beforeLeave', function(){
@@ -71,20 +72,46 @@ app.controller('EventsCtrl', function($scope,
         $scope.events.$loaded().then(function(list) {
           console.log('CAROLINA loaded list',list);
           console.log('*forEach');
-          angular.forEach(list, function(g) {
-            console.log('g ', g);
-            g.position = new google.maps.LatLng(g.latitude,g.longitude);
-            var marker = new google.maps.Marker({ position: g.position, map: map, title: g.name, data: g });
+          angular.forEach(list, function(e) {
+            console.log('e ', e);
+            e.position = new google.maps.LatLng(e.latitude,e.longitude);
+            var marker = new google.maps.Marker({ position: e.position, map: map, title: e.name, data: e });
             $scope.setMarkerInfoListener(marker, true);
             $scope.markers.push(marker);
+            $scope.markerMap[e] = marker;
           });
-          $rootScope.markers = $scope.markers;
           console.log('$scope.markers', $scope.markers);
           $scope.markerClusterer = new MarkerClusterer(map, $scope.markers, {});
           $scope.setNewMarkerListener();
         });
     });
 
+  });
+
+  $scope.$on('$ionicView.enter', function() {
+    console.log('EventsCtrl view enter');
+    console.log('$rootScope.needMarker', $rootScope.needMarker);
+    if($scope.events) {
+      var event = $scope.events[$scope.events.length-1];
+      if ($rootScope.needMarker && !$scope.markerMap[event]) {
+        $scope.needMarker = false;
+        console.log('$scope.newMarker', $scope.newMarker);
+        $scope.newMarker.setVisible(false);
+        var position = new google.maps.LatLng(event.latitude, event.longitude);
+        var mm = new google.maps.Marker({ position: position, map: map, title: event.name, data: event });
+        $scope.markers.push(mm);
+        $scope.markerMap[e] = mm;
+        $scope.setMarkerInfoListener(mm, false);
+        console.log('mm', mm);
+        google.maps.event.trigger(mm, 'click');
+        mm.setVisible(true);
+      }
+    }
+
+  });
+
+  $scope.$on('$ionicView.leave', function(){
+    console.log('EventsCtrl view leave');
   });
 
   $scope.getItemHeight = function(item, index) {
@@ -99,15 +126,15 @@ app.controller('EventsCtrl', function($scope,
     // console.log('$rootScope.map ', $rootScope.map);
     var map = $rootScope.map;
 
-    console.log('google.maps.event', google.maps.event);
+    // console.log('google.maps.event', google.maps.event);
     var handle = google.maps.event.addListener(
       marker,
       'click',
       (function(marker, scope){
         return function(event){
           console.log('**** existing marker click **** scope', scope);
-          console.log('map', map);
-          console.log('**** existing marker click **** scope.auth.profile', scope.auth.profile);
+          // console.log('map', map);
+          // console.log('**** existing marker click **** scope.auth.profile', scope.auth.profile);
           // console.log('**** existing marker click **** scope.event.organizer', scope.event.organizer);
 
           if($rootScope.infowindow) $rootScope.infowindow.close();
@@ -118,16 +145,15 @@ app.controller('EventsCtrl', function($scope,
           marker.__compiled = $compile(marker.__content)(scope);
           marker.__infowindow.setContent( marker.__compiled[0] );
           scope.event = marker.data;
-          console.log('scope.event', scope.event);
+          // console.log('scope.event', scope.event);
           scope.$apply();
           marker.__infowindow.open(map, marker);
           $rootScope.infowindow = marker.__infowindow;
-          console.log('click event marker', marker);
+          // console.log('click event marker', marker);
 
         };//return fn()
       })(marker, $scope)
     );//addListener
-    console.log('handle', handle);
     return handle;
   }//markerInfo
 
@@ -215,13 +241,45 @@ app.controller('EventsCtrl', function($scope,
       console.log('clickMe $scope.event.organizer', $scope.event.organizer);
       var event = $scope.event;
       console.log('event', event);
-      console.log('typeof event.date', typeof event.date);
-      console.log('typeof event.time', typeof event.time);
+      console.log('event.id', event.id);
+
 
       event.date = new Date(event.date_);
       event.time = new Date(event.time_);
-      $scope.eventModal.show();
+
+      // $scope.eventModal.show();
+
+      var map = $rootScope.map;
+      var image = 'http://www.google.com/intl/en_us/mapfiles/ms/micons/red-dot.png';
+      if(event.id == -9) {
+         delete event.id;
+         delete event.prompt;
+         event.organizer = {
+           id: $scope.auth.profile.user_id,
+           name: $scope.auth.profile.name
+         };
+         $rootScope.infowindow.close();
+
+
+         console.log('saving event', event);
+         var event = $scope.event = Data.addEvent(event).then(function (addedEvent) {
+           $scope.event = addedEvent;
+           var index = Data.getEventIndex(addedEvent);
+           console.log('index ', index);
+
+
+
+
+           $state.go("tabs.event-detail", {eventId : Data.getEventIndex(addedEvent)});
+         });
+      }
+      else {
+        var index = Data.getEventIndex(event);
+        console.log('index ', index);
+        $state.go("tabs.event-detail", {eventId : Data.getEventIndex(event)});
+      }
   };
+
 
   $scope.closeMe = function() {
       console.log('closeMe');
@@ -244,21 +302,22 @@ app.controller('EventsCtrl', function($scope,
            name: $scope.auth.profile.name
          }
          console.log('saving event', g);
-         var event = Data.addEvent(g);
-         console.log('$scope.newMarker', $scope.newMarker);
-         $scope.newMarker.setVisible(false);
-         var position = new google.maps.LatLng(event.latitude, event.longitude);
-         var mm = new google.maps.Marker({ position: position, map: map, title: event.name, data: event });
-         $scope.markers.push(mm);
-         mm.setVisible(true);
+         var event = Data.addEvent(g).then(function (addedEvent) {
+           console.log('$scope.newMarker', $scope.newMarker);
+           $scope.newMarker.setVisible(false);
+           var position = new google.maps.LatLng(event.latitude, event.longitude);
+           var mm = new google.maps.Marker({ position: position, map: map, title: event.name, data: event });
+           $scope.markers.push(mm);
+           $scope.markerMap[event] = mm;
+           mm.setVisible(true);
 
-        //  $scope.markerClusterer.addMarker(mm);
+          //  $scope.markerClusterer.addMarker(mm);
 
-         $scope.setMarkerInfoListener(mm, false);
-         $rootScope.infowindow.close();
-         console.log('mm', mm);
-         google.maps.event.trigger(mm, 'click');
-
+           $scope.setMarkerInfoListener(mm, false);
+           $rootScope.infowindow.close();
+           console.log('mm', mm);
+           google.maps.event.trigger(mm, 'click');
+         });
       }
       else {
         $state.go("tabs.event-detail", {eventId : Data.getEventIndex(g)});
@@ -514,7 +573,7 @@ app.directive('googleplace', function() {
 });
 
 
-app.controller('EventDetailCtrl', function($scope, $stateParams, Data, Users, Flickr, auth) {
+app.controller('EventDetailCtrl', function($scope, $rootScope, $stateParams, Data, Users, Flickr, auth, $ionicHistory) {
     $scope.data = {};
     $scope.auth = auth;
     console.log('EventDetailCtrl');
@@ -531,7 +590,7 @@ app.controller('EventDetailCtrl', function($scope, $stateParams, Data, Users, Fl
         $scope.attendees.push(user);
       });
       console.log('$scope.attendees ', $scope.attendees);
-    }
+    };
 
     var doSearch = ionic.debounce(function(query) {
       Flickr.search(query).then(function(resp) {
@@ -552,18 +611,48 @@ app.controller('EventDetailCtrl', function($scope, $stateParams, Data, Users, Fl
       // $scope.event.image = photo;
       console.log('selectImage event.image', $scope.event.image);
 
-    }
+    };
 
     $scope.saveMe = function(event) {
       console.log('EventDetailCtrl::saveMe', event);
       Data.saveEvent(event);
-    }
+      console.log('$scope.eventSaved', $scope.eventSaved);
+    };
 
     $scope.registerMe = function(event) {
       console.log('eventDetailCtr::registerMe', event);
       var user = Users.get(auth.profile.user_id);
       console.log('user', user);
       Data.addAttendee(event, auth.profile.user_id);
+    };
+
+    $scope.goBack = function() {
+      console.log('goBack');
+      var event = $scope.event;
+      console.log('current event', event);
+      console.log('event.organizer', event.organizer);
+      if (event.organizer && (event.organizer.id === auth.profile.user_id)) {
+
+         console.log('event.date.toString()', event.date.toString());
+         console.log('event.time.toString()', event.date.toString());
+
+
+         if((event.name === "") ||
+           (event.date.toString() === '[Invalid Date]') ||
+           (event.date.toString() === 'Invalid Date') ||
+           (event.time.toString() === '[Invalid Date]') ||
+           (event.time.toString() === 'Invalid Date')) {
+           console.log('event not saved or valid, need to delete from db');
+           Data.deleteEvent(event);
+         }
+         else {
+           console.log('event saved, keep it in db');
+           $rootScope.needMarker = true;
+           console.log('setting $rootScope.needMarker', $rootScope.needMarker);
+
+         }
+      }
+      $ionicHistory.goBack();
     }
 })
 
