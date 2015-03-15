@@ -13,8 +13,14 @@ app.controller('LoginCtrl', function($scope, auth, $state, $location, store, Use
        store.set('profile', profile);
        store.set('token', idToken);
        store.set('refreshToken', refreshToken);
-
-       Users.getOrCreate(profile);
+       console.log('auth.getToken({api:firebase})');
+       auth.getToken({
+         api: 'firebase'
+       }).then(function(firebaseToken) {
+         console.log('setting firebaseToken', firebaseToken.id_token);
+         store.set('firebaseToken', firebaseToken.id_token);
+          Users.getOrCreate(profile);
+       });
 
        $state.go('tabs.account');
      }, function(error) {
