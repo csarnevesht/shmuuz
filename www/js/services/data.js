@@ -174,10 +174,10 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
     },
     allEvents: function() {
       console.log('Data service allEvents()', events);
-      // return events;
-      var g = initialize();
-      console.log('g', g);
-      return g;
+      return events;
+      // var g = initialize();
+      // console.log('g', g);
+      // return g;
 
     },
     getEvent: function(eventId) {

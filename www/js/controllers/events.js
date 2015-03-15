@@ -78,7 +78,7 @@ app.controller('EventsCtrl', function($scope,
             var marker = new google.maps.Marker({ position: e.position, map: map, title: e.name, data: e });
             $scope.setMarkerInfoListener(marker, true);
             $scope.markers.push(marker);
-            $scope.markerMap[e] = marker;
+            $scope.markerMap[e.$id] = marker;
           });
           console.log('$scope.markers', $scope.markers);
           $scope.markerClusterer = new MarkerClusterer(map, $scope.markers, {});
@@ -89,18 +89,22 @@ app.controller('EventsCtrl', function($scope,
   });
 
   $scope.$on('$ionicView.enter', function() {
-    console.log('EventsCtrl view enter');
-    console.log('$rootScope.needMarker', $rootScope.needMarker);
-    if($scope.events) {
+    $scope.events = Data.allEvents();
+    console.log('EventsCtrl view enter, $scope.events', $scope.events);
+
+
+    if($scope.events && $scope.events.length) {
+      console.log('EventsCtrl view enter, $scope.events.length', $scope.events.length);
+      console.log('$rootScope.needMarker', $rootScope.needMarker);
       var event = $scope.events[$scope.events.length-1];
-      if ($rootScope.needMarker && !$scope.markerMap[event]) {
+      if ($rootScope.needMarker && !$scope.markerMap[event.$id]) {
         $scope.needMarker = false;
         console.log('$scope.newMarker', $scope.newMarker);
         $scope.newMarker.setVisible(false);
         var position = new google.maps.LatLng(event.latitude, event.longitude);
         var mm = new google.maps.Marker({ position: position, map: map, title: event.name, data: event });
         $scope.markers.push(mm);
-        $scope.markerMap[e] = mm;
+        $scope.markerMap[event.$id] = mm;
         $scope.setMarkerInfoListener(mm, false);
         console.log('mm', mm);
         google.maps.event.trigger(mm, 'click');
@@ -308,7 +312,7 @@ app.controller('EventsCtrl', function($scope,
            var position = new google.maps.LatLng(event.latitude, event.longitude);
            var mm = new google.maps.Marker({ position: position, map: map, title: event.name, data: event });
            $scope.markers.push(mm);
-           $scope.markerMap[event] = mm;
+           $scope.markerMap[event.$id] = mm;
            mm.setVisible(true);
 
           //  $scope.markerClusterer.addMarker(mm);
