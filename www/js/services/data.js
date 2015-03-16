@@ -63,25 +63,30 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
       var ot = data.time;
       data.date_ = data.date.getTime();
       data.time_ = data.time.getTime();
+      data.date = data.date.toString();
+      data.time = data.time.toString();
+
       console.log('_add: adding data', data);
-      sync.$push(angular.fromJson(angular.toJson(data))).then(function(newChildRef) {
+      sync.$push(data).then(function(newChildRef) {
         console.log('newChildRef', newChildRef);
         console.log('_add: pushed event, events', events);
         console.log('_add: events length', events.length);
         var event = events[events.length-1];
         console.log('_add: added event, ', event);
-        event.date = od;
-        event.time = ot;
+    
+        event.date = new Date(event.date_);
+        event.time = new Date(event.time_);
+
         eventMap[event.$id] = events.length-1;
         logMap();
         deferred.resolve(event);
+      }, function(error) {
+        console.log("Error:", error);
       });
       return deferred.promise;
   };
 
   function _update(data) {
-    var od = data.date;
-    var ot = data.time;
     data.date_ = data.date.getTime();
     data.time_ = data.time.getTime();
     // data.datenum = data.date.getTime();
@@ -94,7 +99,8 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
 
     events.$save(data);
 
-
+    event.date = new Date(event.date_);
+    event.time = new Date(event.time_);
 
   }
 
@@ -127,12 +133,14 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
             }
             else {
                 console.log('Data::initialize empty db, initializing');
+                sync.$push({events: []});
+                events = sync.$asArray();
+
                 request.then(function(response){
                           __event = response.data.events;
                           console.log("db is empty, initializing db");
                           console.log('ref ' + ref.toString());
                           console.log('sync', sync);
-                          sync.$push({events: []});
 
                           console.log('read events from data.json', __event);
                           for (var i = 0; i < __event.length; i++) {
@@ -142,10 +150,9 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
                             console.log('storing ', event);
                             _add(event);
                           }
-                          events = sync.$asArray();
                           console.log('Data::initialize() events', events);
                           events.$loaded().then(function(list) {
-                            // updateMap();
+                            updateMap();
                             console.log('DataServiceReady');
                             $rootScope.$broadcast('DataServiceReady');
                             deferred.resolve(events);

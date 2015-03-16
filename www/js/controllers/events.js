@@ -74,6 +74,10 @@ app.controller('EventsCtrl', function($scope,
           console.log('CAROLINA loaded list',list);
           console.log('*forEach');
           angular.forEach(list, function(e) {
+
+            e.date = new Date(e.date_);
+            e.time = new Date(e.time_);
+
             console.log('e ', e);
             e.position = new google.maps.LatLng(e.latitude,e.longitude);
             var marker = new google.maps.Marker({ position: e.position, map: map, title: e.name, data: e });
@@ -259,6 +263,7 @@ app.controller('EventsCtrl', function($scope,
       var map = $rootScope.map;
       var image = 'http://www.google.com/intl/en_us/mapfiles/ms/micons/red-dot.png';
       if(event.id == -9) {
+         console.log('creating event...');
          delete event.id;
          delete event.prompt;
          event.organizer = {
@@ -274,10 +279,9 @@ app.controller('EventsCtrl', function($scope,
            var index = Data.getEventIndex(addedEvent);
            console.log('index ', index);
 
-
-
-
            $state.go("tabs.event-detail", {eventId : Data.getEventIndex(addedEvent)});
+         }, function(error) {
+           console.log("Error:", error);
          });
       }
       else {
