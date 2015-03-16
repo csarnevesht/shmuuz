@@ -25,10 +25,7 @@ exports.defineAutoTests = function () {
     },
     succeed = function (done) {
         expect(true).toBe(true);
-        // callback could be called sync so we invoke done async to make sure we know watcher id to .clear in afterEach 
-        setTimeout(function () {
-            done();
-        });
+        done();
     };
     var isWindowsStore = (cordova.platformId == "windows8") || (cordova.platformId == "windows" && !WinJS.Utilities.isPhone);
 
@@ -138,20 +135,11 @@ exports.defineAutoTests = function () {
                 if (isWindowsStore) {
                     pending();
                 }
-                var self = this;
                 successWatch = navigator.geolocation.watchPosition(
                     function (p) {
-                        // prevents done() to be called several times
-                        if (self.done) return;
-                        self.done = true;
-
                         expect(p.coords).toBeDefined();
                         expect(p.timestamp).toBeDefined();
-                        // callback could be called sync so we invoke done async to make sure we know watcher id to .clear in afterEach 
-                        setTimeout(function () {
-                            done();
-                        })
-                        
+                        done();
                     },
                     fail.bind(null, done),
                     {

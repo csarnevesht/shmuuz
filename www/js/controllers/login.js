@@ -1,4 +1,4 @@
-app.controller('LoginCtrl', function($scope, auth, $state, $location, store, Users) {
+app.controller('LoginCtrl', function($scope, auth, $state, $location, store) {
   console.log('LoginCtrl');
 
   function doAuth() {
@@ -19,7 +19,7 @@ app.controller('LoginCtrl', function($scope, auth, $state, $location, store, Use
        }).then(function(firebaseToken) {
          console.log('setting firebaseToken', firebaseToken.id_token);
          store.set('firebaseToken', firebaseToken.id_token);
-          Users.getOrCreate(profile);
+          // Users.getOrCreate(profile);
        });
 
        $state.go('tabs.account');

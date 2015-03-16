@@ -45,6 +45,7 @@ app.controller('EventsCtrl', function($scope,
         Data.init(),
         Data.getUserDefaults()
       ]).then(function(data) {
+        Users.getOrCreate(auth.profile);
         console.log('CAROLINA data', data);
         $scope.userDefaults = data[1].data.user.defaults;
         $scope.events = data[0];
