@@ -66,14 +66,22 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
       data.date = data.date.toString();
       data.time = data.time.toString();
 
+      if(isNaN(data.date_)) {
+        data.date_ = Date.today().getTime();
+      }
+      if(isNaN(data.time_)) {
+        var t = Date.now().addHours(2).toString("HH:mm");
+        data.time_ = Date.parse(t).getTime();
+      }
+
       console.log('_add: adding data', data);
-      sync.$push(data).then(function(newChildRef) {
+      events.$add(data).then(function(newChildRef) {
         console.log('newChildRef', newChildRef);
         console.log('_add: pushed event, events', events);
         console.log('_add: events length', events.length);
         var event = events[events.length-1];
         console.log('_add: added event, ', event);
-    
+
         event.date = new Date(event.date_);
         event.time = new Date(event.time_);
 
@@ -83,6 +91,22 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
       }, function(error) {
         console.log("Error:", error);
       });
+      // sync.$push(data).then(function(newChildRef) {
+      //   console.log('newChildRef', newChildRef);
+      //   console.log('_add: pushed event, events', events);
+      //   console.log('_add: events length', events.length);
+      //   var event = events[events.length-1];
+      //   console.log('_add: added event, ', event);
+      //
+      //   event.date = new Date(event.date_);
+      //   event.time = new Date(event.time_);
+      //
+      //   eventMap[event.$id] = events.length-1;
+      //   logMap();
+      //   deferred.resolve(event);
+      // }, function(error) {
+      //   console.log("Error:", error);
+      // });
       return deferred.promise;
   };
 
