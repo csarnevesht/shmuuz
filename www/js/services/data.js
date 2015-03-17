@@ -75,8 +75,7 @@ servicesModule.factory('Data', function($state, $q, $http, FIREBASE_URL, $fireba
       }
 
       console.log('_add: adding data', data);
-      events.$add(data).then(function(newChildRef) {
-        console.log('newChildRef', newChildRef);
+      events.$add(data).then(function() {
         console.log('_add: pushed event, events', events);
         console.log('_add: events length', events.length);
         var event = events[events.length-1];
